@@ -1,0 +1,17 @@
+# Compiled Python files
+*.pyc
+
+# Virtual environment
+venv/
+processed-data/
+raw-data/
+resources/
+yolo/
+# PyCharm files
+.idea/
+*.iml
+*.ipr
+*.iws
+*.pydevproject
+
+
