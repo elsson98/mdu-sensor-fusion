@@ -5,16 +5,15 @@ import pandas as pd
 
 
 def copy_images_with_timestamp(source_dir, dest_dir_base):
-    dest_dir = dest_dir_base + '-' + str(round(time.time()))
     png_file_exists = False
-    if not os.path.exists(dest_dir):
-        os.makedirs(dest_dir)
+    if not os.path.exists(dest_dir_base):
+        os.makedirs(dest_dir_base)
     for foldername, subfolders, filenames in os.walk(source_dir):
         for filename in filenames:
             if filename.lower().endswith('.png'):
                 png_file_exists = True
                 source_file = os.path.join(foldername, filename)
-                dest_file = os.path.join(dest_dir, filename)
+                dest_file = os.path.join(dest_dir_base, filename)
                 shutil.copy2(source_file, dest_file)
     if png_file_exists:
         print("All PNG files have been copied.")
@@ -36,8 +35,7 @@ def merge_csv_files(source_dir, dest_dir):
                 dfs.append(df)
     if csv_file_exists:
         merged_df = pd.concat(dfs, ignore_index=True)
-        timestamp = str(round(time.time()))
-        new_filename = f"all-lidar-data-{timestamp}.csv"
+        new_filename = f"all-lidar.csv"
         dest_file = os.path.join(dest_dir, new_filename)
         merged_df.to_csv(dest_file, index=False)
         print("All CSV files have been merged.")
