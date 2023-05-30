@@ -1,7 +1,9 @@
-import numpy as np
-import cv2
-from rplidar import RPLidar
 import time
+
+import cv2
+import numpy as np
+
+from rplidar import RPLidar
 
 time.sleep(0.3)
 

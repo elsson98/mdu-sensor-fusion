@@ -1,8 +1,9 @@
+import glob
 import math
+import os
 import shutil
 from datetime import datetime
-import os
-import glob
+
 import pandas as pd
 
 
@@ -42,7 +43,7 @@ def data_consistency_check(image_folder, lidar_csv_file):
     else:
         first_csv_timestamp = df.iloc[0]['Timestamp']
         df = df[df['Timestamp'] != first_csv_timestamp]
-    df.to_csv("your_file.csv", index=False)
+    df.to_csv("correct_data.csv", index=False)
 
 
 def cleanup_folders(path):
