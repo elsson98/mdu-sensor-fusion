@@ -1,10 +1,11 @@
+import os
 import time
+
+import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
-import matplotlib.pyplot as plt
-import numpy as np
-import os
 
 
 def plot_clusters(group, labels, centroids_x, centroids_y):
@@ -64,7 +65,7 @@ def cluster_data():
             continue
 
         if len(scaled_cartesian_coordinates) > 0:  # Only perform DBSCAN if there are non-zero distance points
-            dbscan = DBSCAN(eps=5, min_samples=2)
+            dbscan = DBSCAN(eps=0.45, min_samples=2)
             dbscan.fit(scaled_cartesian_coordinates)
             labels = np.full(len(group), -1)
             labels[non_zero_distance_mask] = dbscan.labels_
@@ -84,19 +85,20 @@ def cluster_data():
                     centroids_y.append(centroid_y)
             if len(centroids_x) > 0:
                 unscaled_centroids_x = \
-                scaler.inverse_transform(np.column_stack((centroids_x, np.zeros(len(centroids_x))))).T[0]
+                    scaler.inverse_transform(np.column_stack((centroids_x, np.zeros(len(centroids_x))))).T[0]
                 unscaled_centroids_y = \
-                scaler.inverse_transform(np.column_stack((np.zeros(len(centroids_y)), centroids_y))).T[1]
+                    scaler.inverse_transform(np.column_stack((np.zeros(len(centroids_y)), centroids_y))).T[1]
                 for i, label in enumerate(unique_labels):
                     centroid_x = unscaled_centroids_x[i]
                     centroid_y = unscaled_centroids_y[i]
                     df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_X'] = centroid_x
                     df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_Y'] = centroid_y
-                    plot_clusters(group[non_zero_distance_mask], dbscan.labels_, unscaled_centroids_x,unscaled_centroids_y)
+                    # plot_clusters(group[non_zero_distance_mask], dbscan.labels_, unscaled_centroids_x,
+                    #               unscaled_centroids_y)
             else:
                 print(f"No centroids were created for group {name}")
 
-    target_path = r'C:\Users\elson\Desktop\mdu-sensor-fusion\processed-data\\' + "lidar_" + str(
+    target_path = r'C:\Users\elson\Desktop\mdu-sensor-fusion\processed-data\\' + "lidar-clustered-" + str(
         round(time.time())) + ".csv"
     selected_columns = ['Timestamp', 'Angle', 'Distance', 'New_Spin', 'Spin_ID', 'Cluster', 'Centroid_X', 'Centroid_Y']
     df_selected = df[selected_columns]
@@ -110,13 +112,19 @@ def get_unique_cluster(source_path):
     dfs = []
     for spin_id in unique_spins:
         df_spin = df[df['Spin_ID'] == spin_id]
-        df_cluster_0 = df_spin[df_spin['Cluster'] == 0]
-        if df_cluster_0.empty:
-            dfs.append(pd.DataFrame({'Spin_ID': [spin_id], 'Cluster': [0], 'Centroid_X': [0], 'Centroid_Y': [0]}))
-        else:
-            df_unique = df_cluster_0[['Spin_ID', 'Cluster', 'Centroid_X', 'Centroid_Y']].drop_duplicates(subset=['Spin_ID', 'Centroid_X'])
-            dfs.append(df_unique)
+        unique_clusters = df_spin['Cluster'].unique()
+        for cluster in unique_clusters:
+            df_cluster = df_spin[df_spin['Cluster'] == cluster]
+            if df_cluster.empty:
+                dfs.append(
+                    pd.DataFrame({'Spin_ID': [spin_id], 'Cluster': [cluster], 'Centroid_X': [0], 'Centroid_Y': [0]}))
+            else:
+                df_unique = df_cluster[['Spin_ID', 'Cluster', 'Centroid_X', 'Centroid_Y']].drop_duplicates(
+                    subset=['Spin_ID', 'Centroid_X'])
+                dfs.append(df_unique)
     df_result = pd.concat(dfs)
-    dest_path = source_path.replace('lidar', 'unique-cluster-lidar')
+    dest_path = source_path.replace('lidar', 'unique-lidar')
     df_result.to_csv(dest_path, index=False)
+
+
 get_unique_cluster(cluster_data())
