@@ -23,7 +23,7 @@ def plot_clusters(group, labels, centroids_x, centroids_y):
         plt.annotate(str(i), (np.deg2rad(angle), dist))
 
     plt.title(f'Spin: {spin_name}')
-    dir_name = r'C:\Users\elson\Desktop\mdu-sensor-fusion\raw-data\merged-data\clustered_data_visualization'
+    dir_name = r'C:\Users\julia\fusion_data\new-raw-data\raw-data\merged-data\clustered_data_visualization'
     if not os.path.exists(dir_name):
         os.makedirs(dir_name)
     plt.savefig(f'{dir_name}\\spin_{spin_name}.jpg')
@@ -32,7 +32,7 @@ def plot_clusters(group, labels, centroids_x, centroids_y):
 
 
 def cluster_data():
-    df = pd.read_csv(r'C:\Users\elson\Desktop\mdu-sensor-fusion\raw-data\merged-data\merged-lidar-raw.csv')
+    df = pd.read_csv("C:\\Users\\julia\\fusion_data\\new-raw-data\\raw-data\\merged-data\\all-lidar-data-1685476159.csv")
     df['New_Spin_Flag'] = np.where(df['New_Spin'] == 'Yes', 1, 0)
     df['Spin_ID'] = df['New_Spin_Flag'].cumsum()
     df['Centroid_X'] = np.nan
@@ -75,8 +75,9 @@ def cluster_data():
             df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_X'] = centroid_x
             df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_Y'] = centroid_y
             plot_clusters(group, dbscan.labels_, unscaled_centroids_x, unscaled_centroids_y)
-    target_path = r'C:\Users\elson\Desktop\mdu-sensor-fusion\processed-data\\' + "lidar_" + str(
-        round(time.time())) + ".csv"
+    target_path = os.path.join("C:\\Users\\julia\\mdu-fusion-sensor\\processed-data", "lidar_{}".format(str(round(time.time())) + ".csv"))
+    # target_path = r'./processed-data\\' + "lidar_" + str(
+    #     round(time.time())) + ".csv"
     selected_columns = ['Timestamp', 'Angle', 'Distance', 'New_Spin', 'Spin_ID', 'Cluster', 'Centroid_X', 'Centroid_Y']
     df_selected = df[selected_columns]
     df_selected.to_csv(target_path, index=False)
