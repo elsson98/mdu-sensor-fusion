@@ -64,7 +64,7 @@ def cluster_data():
             continue
 
         if len(scaled_cartesian_coordinates) > 0:  # Only perform DBSCAN if there are non-zero distance points
-            dbscan = DBSCAN(eps=0.45, min_samples=2)
+            dbscan = DBSCAN(eps=0.3, min_samples=2)
             dbscan.fit(scaled_cartesian_coordinates)
             labels = np.full(len(group), -1)
             labels[non_zero_distance_mask] = dbscan.labels_
@@ -92,13 +92,13 @@ def cluster_data():
                     centroid_y = unscaled_centroids_y[i]
                     df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_X'] = centroid_x
                     df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_Y'] = centroid_y
-                    # plot_clusters(group[non_zero_distance_mask], dbscan.labels_, unscaled_centroids_x,
-                    #               unscaled_centroids_y)
+                    plot_clusters(group[non_zero_distance_mask], dbscan.labels_, unscaled_centroids_x,
+                                  unscaled_centroids_y)
             else:
                 print(f"No centroids were created for group {name}")
-
-    target_path = r'C:\Users\elson\Desktop\mdu-sensor-fusion\processed-data\\' + "lidar-clustered-" + str(
-        round(time.time())) + ".csv"
+    target_path = os.path.join("C:\\Users\\julia\\mdu-fusion-sensor\\processed-data", "lidar_{}".format(str(round(time.time())) + ".csv"))
+    # target_path = r'C:\Users\elson\Desktop\mdu-sensor-fusion\processed-data\\' + "lidar-clustered-" + str(
+    #     round(time.time())) + ".csv"
     selected_columns = ['Timestamp', 'Angle', 'Distance', 'New_Spin', 'Spin_ID', 'Cluster', 'Centroid_X', 'Centroid_Y']
     df_selected = df[selected_columns]
     df_selected.to_csv(target_path, index=False)
