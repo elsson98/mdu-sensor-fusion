@@ -21,12 +21,13 @@ KeyboardInterrupt
 
 For additional information please refer to the RPLidar class documentation.
 '''
+import codecs
 import logging
+import struct
 import sys
 import time
-import codecs
+
 import serial
-import struct
 
 SYNC_BYTE = b'\xA5'
 SYNC_BYTE2 = b'\x5A'

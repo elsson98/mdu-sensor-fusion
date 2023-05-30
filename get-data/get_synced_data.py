@@ -1,10 +1,11 @@
 import csv
 import multiprocessing
 import time
+
 import cv2
 
-from utils import *
 from rplidar import RPLidar, RPLidarException
+from utils import *
 
 
 def camera_data(start_event, exception_event):
@@ -16,6 +17,7 @@ def camera_data(start_event, exception_event):
         frame_count = 0
         print("Camera started at : " + str(time.time()))
         time.sleep(4)
+        print("Grabing data")
         while True:
             if exception_event.is_set():
                 break
@@ -55,7 +57,8 @@ def read_lidar_data(start_event, exception_event):
             csv_writer = csv.writer(output_file_csv)
             csv_writer.writerow(["Timestamp", "Angle", "Distance", "New_Spin"])
             last_angle = -1
-            time.sleep(4.5)
+            time.sleep(4.9)
+            print("Grabbing data, stop at least after 3s to have data...")
             for i, measurement in enumerate(lidar.iter_measurments()):
                 timestamp = time.time()
                 if exception_event.is_set():
@@ -77,7 +80,8 @@ def read_lidar_data(start_event, exception_event):
     except KeyboardInterrupt as e:
         output_file_csv.close()
         clean_lidar_data(output_file)
-        data_consistency_check(output_file.replace('lidar', 'camera'), output_file)
+        # This function is not completed yet
+        # data_consistency_check(output_file.replace('lidar', 'camera'), output_file)
         print(f"Stopping LiDAR due to {type(e).__name__} at: {time.time()}")
         if not isinstance(e, KeyboardInterrupt):
             exception_event.set()
