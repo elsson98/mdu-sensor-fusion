@@ -1,40 +1,34 @@
-# Import the necessary libraries
-import pandas as pd
+import pickle
+
 import numpy as np
-from xgboost import XGBClassifier
+import pandas as pd
+import xgboost as xgb
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 
-# Assume you have a dataframe `df` with 6 input features and a binary target feature
-# For the sake of this example, let's create a dummy dataframe
 
-np.random.seed(0)
+data = pd.read_csv('../data-processing/training_data.csv')
+data.drop('Spin_ID', axis=1)
+data.drop('Cluster', axis=1)
+# Splitting the data into input features (X) and target variable (y)
+X = data[['Centroid_X', 'Centroid_Y', 'cluster_angle', 'center_x', 'center_y', 'bounding_box_angle']]
+y = data['label']
 
-num_samples = 1000
-num_features = 6
-X = np.random.rand(num_samples, num_features)
-y = np.random.randint(2, size=num_samples)
-
-df = pd.DataFrame(X, columns=[f'feature_{i}' for i in range(num_features)])
-df['target'] = y
-
-# Split the dataframe into input features (X) and target feature (y)
-X = df.drop('target', axis=1)
-y = df['target']
-
-# Split the data into training and testing sets
+# Splitting the data into training and testing sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-# Initialize XGBoost's classifier
-xgb = XGBClassifier(use_label_encoder=False, eval_metric='logloss')
+# Creating the XGBoost classifier
+xgb_classifier = xgb.XGBClassifier()
 
-# Fit the classifier with the training data
-xgb.fit(X_train, y_train)
+# Training the model
+xgb_classifier.fit(X_train, y_train)
 
-# Predict the target values for the test data
-y_pred = xgb.predict(X_test)
+model_file = 'xgb_model.pkl'
+pickle.dump(xgb_classifier, open(model_file, 'wb'))
 
-# Calculate the accuracy of the predictions
+# Making predictions on the test set
+y_pred = xgb_classifier.predict(X_test)
+
+# Evaluating the model
 accuracy = accuracy_score(y_test, y_pred)
-
-print(f'Accuracy: {accuracy * 100:.2f}%')
+print("Accuracy:", accuracy)
