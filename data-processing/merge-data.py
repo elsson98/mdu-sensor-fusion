@@ -28,7 +28,7 @@ def merge_csv_files(source_dir, dest_dir):
     csv_file_exists = False
     for foldername, subfolders, filenames in os.walk(source_dir):
         for filename in filenames:
-            if filename.lower().endswith('.csv'):
+            if filename.lower() == 'reduced_spins.csv':
                 csv_file_exists = True
                 source_file = os.path.join(foldername, filename)
                 df = pd.read_csv(source_file)
@@ -45,8 +45,8 @@ def merge_csv_files(source_dir, dest_dir):
 
 image_source_dir = r'C:\Users\elson\Desktop\mdu-sensor-fusion\raw-data\camera-data'
 image_dest_dir_base = r'C:\Users\elson\Desktop\mdu-sensor-fusion\raw-data\merged-data\all-images'
-csv_source_dir = r'C:\Users\elson\Desktop\mdu-sensor-fusion\raw-data\lidar-data'
-csv_dest_dir = r'C:\Users\elson\Desktop\mdu-sensor-fusion\raw-data\merged-data'
+csv_source_dir = r'C:\Users\julia\fusion_data\new-raw-data\raw-data\lidar-data'
+csv_dest_dir = r'C:\Users\julia\fusion_data\new-raw-data\raw-data\merged-data'
 
-copy_images_with_timestamp(image_source_dir, image_dest_dir_base)
+# copy_images_with_timestamp(image_source_dir, image_dest_dir_base)
 merge_csv_files(csv_source_dir, csv_dest_dir)
