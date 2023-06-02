@@ -27,7 +27,7 @@ with open(csv_path, 'w', newline='') as csvfile:
         x, y, x2, y2 = cords
         center_x = (x + x2) / 2
         center_y = (y + y2) / 2
-        bb_angle = m.acos((image_width - y) / image_width) * (180 / m.pi)
+        bb_angle = m.acos((image_width - center_x) / image_width) * (180 / m.pi)
         if class_id == 'person':
             count += 1
             print(f"Processing image : {file_name.replace('.png', '')} number of image {count}")
