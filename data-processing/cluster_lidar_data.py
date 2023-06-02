@@ -93,8 +93,8 @@ def cluster_data():
                     centroid_y = unscaled_centroids_y[i]
                     df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_X'] = centroid_x
                     df.loc[df.index.isin(group.index) & (df['Cluster'] == label), 'Centroid_Y'] = centroid_y
-                    # plot_clusters(group[non_zero_distance_mask], dbscan.labels_, unscaled_centroids_x,
-                    #               unscaled_centroids_y)
+                    plot_clusters(group[non_zero_distance_mask], dbscan.labels_, unscaled_centroids_x,
+                                   unscaled_centroids_y)
             else:
                 print(f"No centroids were created for group {name}")
 
